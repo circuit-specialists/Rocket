@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>Rocket Launch</title>
+</head>
+
+<body onload="newRequest()">
+    <h1>Data</h1>
+    <table id="data" border="1">
+    </table>
+    <button type="button" onclick="location.href='http://' + window.location.hostname + '/start'">Start Recording Data</button>
+    <button type="button" onclick="location.href='http://' + window.location.hostname + '/download.csv'">Download CSV File</button>
+</body>
+
+<script>
+    /*
+    add later
+    <canvas id="altitude_graph" width="400" height="400"></canvas>
+    <canvas id="acceleration_graph" width="400" height="400"></canvas>
+    <canvas id="pressure_graph" width="400" height="400"></canvas>
+    <canvas id="gps_graph" width="400" height="400"></canvas>
+    */
+    var data_file = "";
+    setInterval(newRequest(), 3000);
+
+    function newRequest() {
+        if (typeof (EventSource) !== 'undefined') {
+            const source = new EventSource('http://' + window.location.hostname + '/sensordata');
+            source.onmessage = function (e) {
+                data_file += e.data + "\n";
+                var table_html = "" +
+                    "<tr><th> Starting Altitude </th><th> %s ft</th></tr>" +
+                    "<tr><th> Delta Altitude </th><th> %s ft</th></tr>" +
+                    "<tr><th> Max Altitude </th><th> %s ft</th></tr>" +
+                    "<tr><th> X Acceleration </th><th> %s m/s</th></tr>" +
+                    "<tr><th> Max X Acceleration </th><th> %s m/s</th></tr>" +
+                    "<tr><th> Y Acceleration </th><th> %s m/s</th></tr>" +
+                    "<tr><th> Max Y Acceleration </th><th> %s m/s</th></tr>" +
+                    "<tr><th> Pressure </th><th> %s hPa</th></tr>" +
+                    "<tr><th> Latitude </th><th> %s %s </th></tr>" +
+                    "<tr><th> Longitude </th><th> %s %s </th></tr>" +
+                    "<tr><th> Lateral Speed </th><th> %s m/s</th></tr>" +
+                    "<tr><th> UTC </th><th> %s </th></tr>";
+                var table_data = e.data.split(',');
+                for (var i in table_data) {
+                    table_html = table_html.replace("%s", table_data[i]);
+                }
+                table_html = table_html.replace("[", '');
+                table_html = table_html.replace("]", '');
+                document.getElementById("data").innerHTML = table_html;
+            };
+        }
+    }
+</script>
+
+</html>
