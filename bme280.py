@@ -123,7 +123,7 @@ class BME280(object):
 
     def getPressure_in(self):
         # Wrapper to get pressure in inches of Hg
-        return self.read_compensated_data()[1]/256/100 * 0.0002953
+        return self.read_compensated_data()[1]/256/100 * 0.02953
 
     def getDewpoint(self):
         # Return calculated dewpoint in C, only accurate at > 50% RH
